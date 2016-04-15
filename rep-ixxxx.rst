@@ -17,9 +17,13 @@ Outline
 #. Motivation_
 #. Definitions_
 #. Assumptions_
-#. `Shared Types`_
-#. Endianness_
-#. `Bytestream Layout`_
+#. Overview_
+
+   #. `Model of Operation`_
+   #. Endianness_
+   #. `Bytestream Layout`_
+   #. `Shared Types`_
+
 #. `Packet Layout`_
 
    #. Preamble_
@@ -126,8 +130,64 @@ Assumptions
    notation.
 
 
+Overview
+========
+
+The Simple Message (SimpleMessage) protocol defines the message structure
+between the ROS driver layer and the robot controller itself. Requirements and
+constraints that influenced its design were:
+
+ 1. Format should be simple enough that code can be shared between ROS and the
+    controller (for those controllers that support C/C++). For those
+    controllers that do not support C/C++, the protocol must be simple enough
+    to be decoded with the limited capabilities of the typical robot
+    programming language. A corollary to this requirement is that the protocol
+    should not be so onerous as to overwhelm the limited resources of the
+    robot controller.
+
+ 1. Format should allow for data streaming (ROS *topic like*).
+
+ 1. Format should allow for data reply (ROS *service like*).
+
+ 1. The protocol is not intended to encapsulate version information. It is up
+    to individual developers to ensure that code developed for communicating
+    platforms does not have any version conflicts (this includes message type
+    identifiers).
+
+TODO: extend.
+
+
+Model of Operation
+------------------
+
+TODO: client-server based. Controller-specific programs running on the
+controller, generic ROS nodes are provided by ``industrial_robot_client``
+package. Nodes (try to) open TCP (by default) connections to the server
+programs on the controller. All *state relay*-type server programs broadcast
+state periodically in *topic like* messages, clients command motion by
+enqueuing trajectory points at the server side using *service like* messages
+sent to *trajectory relay* programs, requesting execution of the trajectory
+according to the communicated constraints (velocity, time_from_start etc).
+Client is *not* in direct control of motion, server makes use of robot
+controller facilities (interpolation, etc).
+
+
+Endianness
+----------
+
+TODO: explain that 'default simple message' supports ``<le, 32, 32>`` (default),
+``<be, 32, 32>`` (bswap) and ``<le, 32, 64>`` (float64).
+
+
+Bytestream Layout
+-----------------
+
+TODO: explain makeup of bytestream: length, header, payload. No magic or sync
+bytes (currently). No section markers, just byte counting.
+
+
 Shared Types
-============
+------------
 
 All message structures are aggregates of fields with a type from the set of
 *shared types*. 
@@ -145,20 +205,6 @@ these types
 TODO: explain that ``shared_real`` can be either a ``float`` or a ``double``
 
 
-Endianness
-==========
-
-TODO: explain that 'default simple message' supports ``<le, 32, 32>`` (default),
-``<be, 32, 32>`` (bswap) and ``<le, 32, 64>`` (float64).
-
-
-Bytestream Layout
-=================
-
-TODO: explain makeup of bytestream: length, header, payload. No magic or sync
-bytes (currently). No section markers, just byte counting.
-
-
 Packet Layout
 =============
 
@@ -170,7 +216,7 @@ Preamble
 --------
 
 All packets must start with the *preamble*, which must contain only a single
-field: ``length``. Message structure length is defined as the sum (in bytes)
+field: ``length``. Message structure length is defined as the sum in bytes
 of the sizes of the individual fields in the *header* and the *body*,
 excluding the ``length`` field itself (ie: only actual message bytes are
 considered).
