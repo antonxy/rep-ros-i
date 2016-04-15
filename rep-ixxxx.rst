@@ -71,8 +71,9 @@ servers and to assist developers in implementing new drivers, a
 central registry of defined message identifiers, their structures and
 their semantics is essential.
 
-Identifiers are documented in the [#REP-I0004]_ (TODO: copy title).
-Message structures and their semantics are described in this document.
+Identifiers are documented in *REP-I0004 - Assigned Message
+Identifiers for the Simple Message Protocol* [#REP-I0004]_. Message
+structures and their semantics are described in this document.
 
 This document provides the normative reference for all messages that
 are part of the *standard set*, and are thus supported by the generic
