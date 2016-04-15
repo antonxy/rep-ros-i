@@ -37,7 +37,7 @@ Outline
    #. JOINT_TRAJ_PT_FULL_
    #. JOINT_FEEDBACK_
 
-#. `Defined constants`_
+#. `Defined Constants`_
 
    #. `Reply Codes`_
    #. `Communication Types`_
@@ -47,6 +47,12 @@ Outline
 
 #. `Application Procedure`_
 #. References_
+#. `Appendix A - Bytestream Examples`_
+
+   #. `Example: JOINT_POSITION`_
+   #. `Example: JOINT_TRAJ_PT`_
+   #. `Example: STATUS`_
+
 #. `Revision History`_
 #. Copyright_
 
@@ -112,13 +118,12 @@ Motion group
 Assumptions
 ===========
 
-#. The key words "must", "must not", "required", "shall", "shall not",
-   "should", "should not", "recommended",  "may", and "optional" in this
+#. The key words *must*, *must not*, *required*, *shall*, *shall not*,
+   *should*, *should not*, *recommended*,  *may*, and *optional* in this
    document are to be interpreted as described in RFC-2119 [#RFC2119]_.
 #. Where applicable, fields with units will adhere to ROS REP-103 [#REP103]_.
 #. Message type identifiers, when given, will always use decimal (base-ten)
    notation.
-#. TODO: others
 
 
 Shared Types
@@ -136,6 +141,7 @@ The following set has been defined (type sizes are in bytes)::
 
 TODO: explain that this is to accomodate systems that have different sizes of
 these types
+
 TODO: explain that ``shared_real`` can be either a ``float`` or a ``double``
 
 
@@ -317,7 +323,9 @@ Description.
 
 Only used for relaying server state, NOT for enqueueing trajectory points.
 
-One of the two message used for broadcasting joint states
+One of the two message used for broadcasting joint states.
+
+See `Example: JOINT_POSITION`_ for byte-stream example.
 
 Message type: *asynchronous publication*
 
@@ -364,6 +372,8 @@ JOINT_TRAJ_PT
 
 Clients may use this message to enqueue trajectory points for execution on
 the server.
+
+See `Example: JOINT_TRAJ_PT`_ for byte-stream example.
 
 Message type: *synchronous service*
 
@@ -461,6 +471,8 @@ STATUS
 Description.
 
 Also: ``ROBOT_STATUS``. Not for joint states.
+
+See `Example: STATUS`_ for byte-stream example.
 
 Message type: *asynchronous publication*
 
@@ -728,6 +740,107 @@ References
    (https://groups.google.com/forum/?fromgroups#!forum/swri-ros-pkg-dev)
 .. [#REP-I0004] REP-I0004 - Assigned Message Identifiers for the Simple Message Protocol, on-line, retrieved 5 October 2015
    (https://github.com/ros-industrial/rep/blob/7894644f4937c1d910b3e55ad4494788637f89ef/rep-I0004.rst)
+
+
+Appendix A - Bytestream Examples
+================================
+
+This section provides three annotated examples of bytestreams driver authors can
+expect to be sent and received by the generic nodes in the
+``industrial_robot_client`` package.
+
+Note that the hexadecimal numbers are displayed in big-endian byte-order.
+
+
+Example: JOINT_POSITION
+-----------------------
+
+This shows a stream for a ``JOINT_POSITION`` message, sent by a server to
+broadcast joint state for a six-axis, serial industrial robot.
+
+::
+
+  Hex       Field              Description
+
+            Preamble
+  00000038    length           56 bytes
+
+            Header
+  0000000A    msg_type         Joint Position
+  00000001    comm_type        Topic
+  00000000    reply_code       Unused / Invalid
+
+            Body
+  00000000    sequence          0 (unused)
+  B81AD9FA    joint_data[0]    -0.000036919
+  B6836312    joint_data[1]    -0.000003916
+  B7C043F5    joint_data[2]    -0.000022920
+  B8B81516    joint_data[3]    -0.000087777
+  B865D055    joint_data[4]    -0.000054792
+  B8B6365E    joint_data[5]    -0.000086886
+  00000000    joint_data[6]     0.000000000
+  00000000    joint_data[7]     0.000000000
+  00000000    joint_data[8]     0.000000000
+  00000000    joint_data[9]     0.000000000
+
+
+Example: JOINT_TRAJ_PT
+----------------------
+
+::
+
+  Hex       Field              Description
+
+            Preamble
+  00000040    length           64 bytes
+
+            Header
+  0000000B    msg_type         Joint Trajectory Point
+  00000002    comm_type        Service Request
+  00000000    reply_code       Unused / Invalid
+
+            Body
+  00000001    sequence          1 (second TrajectoryPoint)
+  A7600000    joint_data[0]    -0.000000000
+  3EA7CDE8    joint_data[1]     0.327742815
+  BF5D9E57    joint_data[2]    -0.865697324
+  C0490FDB    joint_data[3]    -3.141592741
+  3F34815F    joint_data[4]     0.705099046
+  C0490FDB    joint_data[5]    -3.141592741
+  00000000    joint_data[6]     0.000000000
+  00000000    joint_data[7]     0.000000000
+  00000000    joint_data[8]     0.000000000
+  00000000    joint_data[9]     0.000000000
+  3DCCCCCD    velocity          0.1
+  40A00000    duration          5.0
+
+
+Example: STATUS
+---------------
+
+This is a bytestream encoding a ``STATUS`` message, again for a six-axis,
+serial industrial robot.
+
+::
+
+  Hex       Field              Description
+
+            Preamble
+  00000028    length           40 bytes
+
+            Header
+  0000000D    msg_type         Status
+  00000001    comm_type        Topic
+  00000000    reply_code       Unused / Invalid
+
+            Body
+  00000001    drives_powered   True
+  FFFFFFFF    e_stopped        Unknown
+  00000000    error_code       0
+  00000000    in_error         False
+  00000000    in_motion        False
+  00000002    mode             Auto
+  00000001    motion_possible  True
 
 
 Revision History
