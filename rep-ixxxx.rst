@@ -357,58 +357,6 @@ Notes
 #. TODO
 
 
-STATUS
-------
-
-Description.
-
-Also: ``ROBOT_STATUS``. Not for joint states.
-
-Message type: *asynchronous publication*
-
-Assigned identifier (see [#REP-I0004]_): 13
-
-Msg::
-
-  Preamble
-  Header
-  drives_powered   : shared_int
-  e_stopped        : shared_int
-  error_code       : shared_int
-  in_error         : shared_int
-  in_motion        : shared_int
-  mode             : shared_int
-  motion_possible  : shared_int
-
-The fields ``drives_powered``, ``e_stopped``, ``in_error``,
-``in_motion`` and ``motion_possible`` are treated as tri-states. Valid values
-are::
-
-  Val  Name     Description
-
-   -1  UNKNOWN  -
-    0  ON       Also encodes TRUE, ENABLED or HIGH
-    1  OFF      Also encodes FALSE, DISABLED or LOW
-
-All other values are reserved for future use.
-
-Valid values for ``mode`` are::
-
-  Val  Name     Description
-
-   -1  UNKNOWN  -
-    1  MANUAL   Controller is in ISO 10218-1 'manual' mode
-    2  AUTO     Controller is in ISO 10218-1 'automatic' mode
-
-All other values are reserved for future use.
-
-Notes
-
-#. The ``error_code`` field should be used to store the numerical
-   representation (id, number or code) of the error that caused the robot to
-   go into an error mode.
-
-
 JOINT_TRAJ_PT
 -------------
 
@@ -474,6 +422,58 @@ Reply::
 Notes
 
 #. None
+
+
+STATUS
+------
+
+Description.
+
+Also: ``ROBOT_STATUS``. Not for joint states.
+
+Message type: *asynchronous publication*
+
+Assigned identifier (see [#REP-I0004]_): 13
+
+Msg::
+
+  Preamble
+  Header
+  drives_powered   : shared_int
+  e_stopped        : shared_int
+  error_code       : shared_int
+  in_error         : shared_int
+  in_motion        : shared_int
+  mode             : shared_int
+  motion_possible  : shared_int
+
+The fields ``drives_powered``, ``e_stopped``, ``in_error``,
+``in_motion`` and ``motion_possible`` are treated as tri-states. Valid values
+are::
+
+  Val  Name     Description
+
+   -1  UNKNOWN  -
+    0  ON       Also encodes TRUE, ENABLED or HIGH
+    1  OFF      Also encodes FALSE, DISABLED or LOW
+
+All other values are reserved for future use.
+
+Valid values for ``mode`` are::
+
+  Val  Name     Description
+
+   -1  UNKNOWN  -
+    1  MANUAL   Controller is in ISO 10218-1 'manual' mode
+    2  AUTO     Controller is in ISO 10218-1 'automatic' mode
+
+All other values are reserved for future use.
+
+Notes
+
+#. The ``error_code`` field should be used to store the numerical
+   representation (id, number or code) of the error that caused the robot to
+   go into an error mode.
 
 
 JOINT_TRAJ_PT_FULL
