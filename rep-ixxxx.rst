@@ -261,6 +261,12 @@ Notes
    message type.
 #. The ``TOPIC`` communication type shall only be used when the sender does
    not need the recipient to acknowledge the message.
+#. Receivers shall ignore (ie: take no action upon receipt) incoming ``TOPIC``
+   messages they do not support.
+#. Incoming ``SERVICE_REQUEST`` messages requesting use of a service that the
+   receiver does not support shall result in a ``SERVICE_REPLY`` being sent
+   by the receiver with the ``reply_code`` set to ``FAILURE``. No further
+   action shall be taken.
 #. Implementations shall ignore incoming ``SERVICE_REPLY`` messages for
    which no outstanding ``SERVICE_REQUEST`` exists.
 #. Implementations shall warn the user of any incoming messages with the
