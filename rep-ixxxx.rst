@@ -377,7 +377,7 @@ Only used for relaying server state, NOT for enqueueing trajectory points.
 
 One of the two message used for broadcasting joint states.
 
-See `Example: JOINT_POSITION`_ for byte-stream example.
+See `Example: JOINT_POSITION`_ for bytestream example.
 
 Message type: *asynchronous publication*
 
@@ -425,7 +425,7 @@ JOINT_TRAJ_PT
 Clients may use this message to enqueue trajectory points for execution on
 the server.
 
-See `Example: JOINT_TRAJ_PT`_ for byte-stream example.
+See `Example: JOINT_TRAJ_PT`_ for bytestream example.
 
 Message type: *synchronous service*
 
@@ -524,7 +524,7 @@ Description.
 
 Also: ``ROBOT_STATUS``. Not for joint states.
 
-See `Example: STATUS`_ for byte-stream example.
+See `Example: STATUS`_ for bytestream example.
 
 Message type: *asynchronous publication*
 
@@ -808,7 +808,9 @@ Example: JOINT_POSITION
 -----------------------
 
 This shows a stream for a ``JOINT_POSITION`` message, sent by a server to
-broadcast joint state for a six-axis, serial industrial robot.
+broadcast joint state for a six-axis robot that is close to its zero position.
+
+Direction: server → client
 
 ::
 
@@ -838,6 +840,12 @@ broadcast joint state for a six-axis, serial industrial robot.
 
 Example: JOINT_TRAJ_PT
 ----------------------
+
+The following is a bytestream for a serialised ``JOINT_TRAJ_PT`` sent be a
+client to a server to request the second trajectory point in a trajectory be
+queued for execution by the controller. This is for a six-axis robot.
+
+Direction: client → server
 
 ::
 
@@ -870,8 +878,13 @@ Example: JOINT_TRAJ_PT
 Example: STATUS
 ---------------
 
-This is a bytestream encoding a ``STATUS`` message, again for a six-axis,
-serial industrial robot.
+This is a bytestream encoding a ``STATUS`` message for a six-axis robot that is
+in auto-mode, not moving, not in an error mode, of which the servo drives are
+powered and is ready to execute a new trajectory. Note that the state of the
+e-stop could not be determined by the driver, and is thus reported as
+``UNKNOWN``.
+
+Direction: server → client
 
 ::
 
