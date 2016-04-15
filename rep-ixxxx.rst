@@ -137,19 +137,16 @@ The Simple Message (SimpleMessage) protocol defines the message structure
 between the ROS driver layer and the robot controller itself. Requirements and
 constraints that influenced its design were:
 
-1. Format should be simple enough that code can be shared between ROS and the
+#. Format should be simple enough that code can be shared between ROS and the
    controller (for those controllers that support C/C++). For those
    controllers that do not support C/C++, the protocol must be simple enough
    to be decoded with the limited capabilities of the typical robot
    programming language. A corollary to this requirement is that the protocol
    should not be so onerous as to overwhelm the limited resources of the
    robot controller.
-
-1. Format should allow for data streaming (ROS *topic like*).
-
-1. Format should allow for data reply (ROS *service like*).
-
-1. The protocol is not intended to encapsulate version information. It is up
+#. Format should allow for data streaming (ROS *topic like*).
+#. Format should allow for data reply (ROS *service like*).
+#. The protocol is not intended to encapsulate version information. It is up
    to individual developers to ensure that code developed for communicating
    platforms does not have any version conflicts (this includes message type
    identifiers).
