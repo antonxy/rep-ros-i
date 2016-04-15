@@ -133,9 +133,12 @@ Assumptions
 Overview
 ========
 
-The Simple Message (SimpleMessage) protocol defines the message structure
-between the ROS driver layer and the robot controller itself. Requirements and
-constraints that influenced its design were:
+(TODO: wiki text) The Simple Message (SimpleMessage) protocol defines the
+message structure between the ROS driver layer and the robot controller itself
+as used by the generic nodes in the ``industrial_robot_client`` package of
+ROS-Industrial.
+
+Requirements and constraints that influenced its design were:
 
 #. Format should be simple enough that code can be shared between ROS and the
    controller (for those controllers that support C/C++). For those
@@ -403,7 +406,7 @@ Notes
    group should use the `JOINT_FEEDBACK`_ message if they wish to report joint
    state for all configured motion groups.
 #. The elements of the ``joint_data`` field shall represent the joint space
-   positions of the corresponding joint axis of the controller. Units are
+   positions of the corresponding joint axes of the controller. Units are
    *radians* for rotational or revolute axes, and *meters* for translational
    or prismatic axes (see also [#REP103]_).
 #. TODO: what should authors / drivers do when there are more than 10 joints
@@ -467,17 +470,17 @@ Notes
    group should use the `JOINT_TRAJ_PT_FULL`_ message if they wish to relay
    trajectories for all configured motion groups.
 #. The elements of the ``joint_data`` field shall represent the joint space
-   positions of the corresponding joint axis of the controller. Units are
+   positions of the corresponding joint axes of the controller. Units are
    *radians* for rotational or revolute axes, and *meters* for translational
    or prismatic axes (see also [#REP103]_).
 #. The ``duration`` field represents total segment duration for all joints in
    seconds [#REP103]_. The generic nodes calculate this duration based on the
    time needed by the slowest joint to complete the segment.
    As an alternative to the ``duration`` field, the value of the ``velocity``
-   field is a value between ``0`` and ``1`` representing the fraction of
-   maximum joint velocity that should be used when executing the motion for the
-   current segment. Driver authors may use whichever value is more conveniently
-   mapped onto motion primitives supported by the controller.
+   field is a value representing the fraction ``(0.0, 1.0]`` of maximum joint
+   velocity that should be used when executing the motion for the current
+   segment. Driver authors may use whichever value is more conveniently mapped
+   onto motion primitives supported by the controller.
 #. TODO: problem with 'velocity': is that max velocity over segment, average
    velocity, or does it encode desired state of manipulator at a specific point
    in time?
