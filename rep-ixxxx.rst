@@ -249,7 +249,7 @@ Layout::
 
 Notes
 
-#. Refer to [#REP-I0004]_ for valid values for the ``msg_type`` field.
+#. Refer to [REP-I0004]_ for valid values for the ``msg_type`` field.
 #. Refer to `Communication Types`_ for valid values for the ``comm_type``
    field.
 #. Refer to `Reply Codes`_ for valid values for the ``reply_code``
