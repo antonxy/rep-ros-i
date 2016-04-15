@@ -6,7 +6,7 @@
   Status: Draft
   Type: Process
   Content-Type: text/x-rst
-  Created: 5-Jan-2016
+  Created: 15-Apr-2016
   Post-History: 
 
 
@@ -28,8 +28,6 @@ Outline
 
 #. `Message Definitions`_
 
-   #. `Reply Codes`_
-   #. `Communication Types`_
    #. PING_
    #. GET_VERSION_
    #. JOINT_POSITION_
@@ -38,6 +36,14 @@ Outline
    #. STATUS_
    #. JOINT_TRAJ_PT_FULL_
    #. JOINT_FEEDBACK_
+
+#. `Defined constants`_
+
+   #. `Reply Codes`_
+   #. `Communication Types`_
+   #. `Special Sequence Numbers`_
+   #. Tri-states_
+   #. `Valid fields`_
 
 #. `Application Procedure`_
 #. References_
@@ -99,6 +105,8 @@ Trajectory Point
     TODO: improve description. A single point in a trajectory that
     encodes a position in space, with associated velocity and
     acceleration constraints.
+Motion group
+    TODO
 
 
 Assumptions
@@ -167,8 +175,8 @@ Layout::
 
 Notes
 
-#. Client and server implementations are required to add the preamble to all
-   outgoing messages.
+#. Client and server implementations must add the preamble to all outgoing
+   messages.
 #. Refer to section `Shared Types`_ for information on the size of supported
    field types.
 #. The size of fields that are arrays or lists shall be defined as the size
@@ -187,44 +195,21 @@ Layout::
   comm_type        : shared_int
   reply_code       : shared_int
 
-Communication Types
-^^^^^^^^^^^^^^^^^^^
-
-Valid values for the ``comm_type`` field are::
-
-  Val  Name             Description
-
-    0  INVALID          Reserved value. Do not use.
-    1  TOPIC            Message needs no acknowledgement
-    2  SERVICE_REQUEST  Sender requires acknowledgement
-    3  SERVICE_REPLY    Message is a reply to a request
-
-All other values are reserved for future use.
-
-Reply Codes
-^^^^^^^^^^^
-
-Valid values for the ``reply_code`` field are::
-
-  Val  Name     Description
-
-    0  INVALID  See notes below
-    1  SUCCESS  Receiver processed the message succesfully
-    2  FAILURE  Receiver encountered a failure processing the message
-
-All other values are reserved for future use.
-
 Notes
 
 #. Refer to [#REP-I0004]_ for valid values for the ``msg_type`` field.
+#. Refer to `Communication Types`_ for valid values for the ``comm_type``
+   field.
+#. Refer to `Reply Codes`_ for valid values for the ``reply_code``
+   field.
 #. For ``TOPIC`` and ``SERVICE_REQUEST`` type messages, the ``reply_code``
-   field should be set to ``INVALID``.
-#. The ``SUCCESS`` and ``FAILURE`` reply codes may only be used with
+   field must be set to ``INVALID``.
+#. The ``SUCCESS`` and ``FAILURE`` reply codes shall only be used with
    ``SERVICE_REPLY`` type messages. They are not valid for any other
    message type.
-#. The ``TOPIC`` communication type should only be used when the sender does
+#. The ``TOPIC`` communication type shall only be used when the sender does
    not need the recipient to acknowledge the message.
-#. Implementations should ignore incoming ``SERVICE_REPLY`` messages for
+#. Implementations shall ignore incoming ``SERVICE_REPLY`` messages for
    which no outstanding ``SERVICE_REQUEST`` exists.
 #. Implementations shall warn the user of any incoming messages with the
    ``comm_type`` field set to either invalid or unsupported values. The
@@ -250,6 +235,9 @@ Message Definitions
 The following sections describe the message structures that make up
 the standard set of the Simple Message protocol.
 
+Values given as *assigned message identifiers* are further described in
+[#REP-I0004]_.
+
 
 PING
 ----
@@ -261,7 +249,11 @@ minimal delay.
 
 Message type: *synchronous service*
 
-Assigned identifier (see [#REP-I0004]_): 1
+Assigned message identifier: 1
+
+Status: active, in use
+
+Supported by generic nodes: yes
 
 Request::
 
@@ -289,7 +281,11 @@ running on the remote system.
 
 Message type: *synchronous service*
 
-Assigned identifier (see [#REP-I0004]_): 2
+Assigned message identifier: 2
+
+Status: active, in use
+
+Supported by generic nodes: no
 
 Request::
 
@@ -325,37 +321,42 @@ One of the two message used for broadcasting joint states
 
 Message type: *asynchronous publication*
 
-Assigned identifier (see [#REP-I0004]_): 10
+Assigned message identifier: 10
 
-Msg::
+Status: active, in use
+
+Supported by generic nodes: yes
+
+Message::
 
   Preamble
   Header
   sequence         : shared_int
   joint_data       : shared_real[10]
 
-Valid values for the ``sequence`` field are::
-
-  Val  Name                        Description
-
-    N                              Index into current trajectory
-   -1  START_TRAJECTORY_DOWNLOAD   Downloading drivers only: signals start
-   -2  START_TRAJECOTRY_STREAMING  TODO (typo is on purpose)
-   -3  END_TRAJECTORY              Downloading drivers only: signals end
-   -4  STOP_TRAJECTORY             TODO
-
 Notes
 
+#. Use of this message structure for enqueuing trajectory points is deprecated
+   and **not** supported by the generic nodes in the ``industrial_robot_client``
+   package. Drivers should use the `JOINT_TRAJ_PT`_ or `JOINT_TRAJ_PT_FULL`_
+   messages instead.
+#. The ``sequence`` field uses zero-based numbering.
+#. The ``sequence`` field is not used when reporting joint state and shall be
+   set to zero (``0``) by server implementations.
 #. Elements of ``joint_data`` that are not used must be initialised to zero
    (``0``) by the sender.
 #. The size of the ``joint_data`` array is ``10``, even if the server
-   implementation does not need that many elements (fi because it only has 6
-   joints).
-#. Driver authors must abort any motion executing on the controller on receipt
-   of a message with ``sequence`` set to ``STOP_TRAJECTORY``.
-#. Server behaviour is undefined for trajectory points that arrive
-   out-of-order (ie: ``seq(msg_n) < seq(msg_n-1)``).
-#. TODO
+   implementation does not need that many elements (for instance because it
+   only has six joints).
+#. Controllers that support or are configured with more than a single motion
+   group should use the `JOINT_FEEDBACK`_ message if they wish to report joint
+   state for all configured motion groups.
+#. The elements of the ``joint_data`` field shall represent the joint space
+   positions of the corresponding joint axis of the controller. Units are
+   *radians* for rotational or revolute axes, and *meters* for translational
+   or prismatic axes (see also [#REP103]_).
+#. TODO: what should authors / drivers do when there are more than 10 joints
+   in a single motion group?
 
 
 JOINT_TRAJ_PT
@@ -366,9 +367,13 @@ the server.
 
 Message type: *synchronous service*
 
-Assigned identifier (see [#REP-I0004]_): 11
+Assigned message identifier: 11
 
-Msg::
+Status: active, in use
+
+Supported by generic nodes: yes
+
+Request::
 
   Preamble
   Header
@@ -385,18 +390,44 @@ Reply::
 
 Notes
 
-#. See `JOINT_POSITION`_ for valid values for ``sequence``.
-#. TODO: ``joint_data`` is een array van joint angles in radians.
-#. TODO: een server ACK is alleen een ACK van de enqueuing operation, NIET
-   van de reachability of execution completion. Daar is ``STATUS`` voor.
-#. TODO: vaak zal ``velocity`` de inverse zijn van ``duration``. Driver
-   authors may use which ever is more convenient to map onto motion controller
-   primitives.
+#. Drivers shall set the value of the ``reply_code`` field in the ``Header``
+   of the reply messages to *the result of the enqueueing operation* of the
+   trajectory point that was transmitted in the request. It is *not* to be
+   used to report the success or failure of the *execution* of the motion.
+   Drivers may use the appropriate fields in `STATUS`_ for that.
+#. TODO: the IRC is not setup to support this currently. Also: does this only
+   hold for drivers that use a trajectory buffering approach? What about
+   direct streaming?
+#. Refer to `Special Sequence Numbers`_ for valid values for the ``sequence``
+   field.
+#. Driver authors must abort any motion executing on the controller on receipt
+   of a message with ``sequence`` set to ``STOP_TRAJECTORY``. Note that such
+   messages must also be acknowledged with a reply message.
+#. Servers must abort any motion executing on the controller on receipt of an
+   out-of-order trajectory point (ie: ``(seq(msg_n) - seq(msg_n-1)) != 1``).
+#. Elements of ``joint_data`` that are not used must be initialised to zero
+   (``0``) by the sender.
+#. The size of the ``joint_data`` array is ``10``, even if the server
+   implementation does not need that many elements (for instance because it
+   only has six joints).
+#. Controllers that support or are configured with more than a single motion
+   group should use the `JOINT_TRAJ_PT_FULL`_ message if they wish to relay
+   trajectories for all configured motion groups.
+#. The elements of the ``joint_data`` field shall represent the joint space
+   positions of the corresponding joint axis of the controller. Units are
+   *radians* for rotational or revolute axes, and *meters* for translational
+   or prismatic axes (see also [#REP103]_).
+#. The ``duration`` field represents total segment duration for all joints in
+   seconds [#REP103]_. The generic nodes calculate this duration based on the
+   time needed by the slowest joint to complete the segment.
+   As an alternative to the ``duration`` field, the value of the ``velocity``
+   field is a value between ``0`` and ``1`` representing the fraction of
+   maximum joint velocity that should be used when executing the motion for the
+   current segment. Driver authors may use whichever value is more conveniently
+   mapped onto motion primitives supported by the controller.
 #. TODO: problem with 'velocity': is that max velocity over segment, average
    velocity, or does it encode desired state of manipulator at a specific point
    in time?
-#. TODO: 'duration' only makes sense when it encodes total motion execution
-   time for the segment defined by ``(p_n; p_n+1)``.
 
 
 JOINT_TRAJ
@@ -404,13 +435,15 @@ JOINT_TRAJ
 
 Used to encode entire ROS ``JointTrajectory`` messages.
 
-Deprecated.
-
 Message type: *synchronous service*
 
-Assigned identifier (see [#REP-I0004]_): 12
+Assigned message identifier: 12
 
-Msg::
+Status: deprecated
+
+Supported by generic nodes: no
+
+Message::
 
   Header
   sequence         : shared_int
@@ -419,10 +452,7 @@ Msg::
 Reply::
 
   Header
-
-Notes
-
-#. None
+  TODO
 
 
 STATUS
@@ -434,9 +464,13 @@ Also: ``ROBOT_STATUS``. Not for joint states.
 
 Message type: *asynchronous publication*
 
-Assigned identifier (see [#REP-I0004]_): 13
+Assigned message identifier: 13
 
-Msg::
+Status: active, in use
+
+Supported by generic nodes: yes
+
+Message::
 
   Preamble
   Header
@@ -448,23 +482,12 @@ Msg::
   mode             : shared_int
   motion_possible  : shared_int
 
-The fields ``drives_powered``, ``e_stopped``, ``in_error``,
-``in_motion`` and ``motion_possible`` are treated as tri-states. Valid values
-are::
-
-  Val  Name     Description
-
-   -1  UNKNOWN  -
-    0  ON       Also encodes TRUE, ENABLED or HIGH
-    1  OFF      Also encodes FALSE, DISABLED or LOW
-
-All other values are reserved for future use.
-
 Valid values for ``mode`` are::
 
   Val  Name     Description
 
-   -1  UNKNOWN  -
+   -1  UNKNOWN  Controller mode cannot be determined or is not one of those
+                defined in ISO 10218-1
     1  MANUAL   Controller is in ISO 10218-1 'manual' mode
     2  AUTO     Controller is in ISO 10218-1 'automatic' mode
 
@@ -472,9 +495,16 @@ All other values are reserved for future use.
 
 Notes
 
-#. The ``error_code`` field should be used to store the numerical
-   representation (id, number or code) of the error that caused the robot to
-   go into an error mode.
+#. The fields ``drives_powered``, ``e_stopped``, ``in_error``, ``in_motion``
+   and ``motion_possible`` are tri-states. Refer to `Tri-states`_ for valid
+   values for these fields.
+#. Fields for which a driver cannot determine a value shall be set to
+   ``UNKNOWN``.
+#. The ``error_code`` field should be used to store the integer representation
+   (id, number or code) of the error that caused the robot to go into an error
+   mode.
+#. If the controller can be set to modes other than those defined in ISO
+   10218-1, drivers shall report ``UNKNOWN`` for those modes.
 
 
 JOINT_TRAJ_PT_FULL
@@ -487,9 +517,13 @@ TODO: extend.
 
 Message type: *synchronous service*
 
-Assigned identifier (see [#REP-I0004]_): 14
+Assigned message identifier: 14
 
-Msg::
+Status: active, in use
+
+Supported by generic nodes: no
+
+Request::
 
   Preamble
   Header
@@ -507,22 +541,40 @@ Reply::
   Header
   dummy_data       : shared_real[10]
 
-Defined bit positions in ``valid_fields`` are::
-
-  Pos  Name          Description
-
-    0  TIME          The 'time' field contains valid data
-    1  POSITION      The 'positions' field contains valid data
-    2  VELOCITY      The 'velocities' field contains valid data
-    3  ACCELERATION  The 'accelerations' field contains valid data
-
-All other positions are reserved for future use.
-
-TODO: bit position counting is from LSB.
-
 Notes
 
-#. See `JOINT_POSITION`_ for valid values for ``sequence``.
+#. Drivers shall set the value of the ``reply_code`` field in the ``Header``
+   of the reply messages to the result of the *enqueueing operation* of the
+   trajectory point that was transmitted in the request. It is *not* to be
+   used to report the success or failure of the *execution* of the motion.
+   Drivers may use the appropriate fields in `STATUS`_ for that.
+#. TODO: the IRC is not setup to support this currently. Also: does this only
+   hold for drivers that use a trajectory buffering approach? What about
+   direct streaming?
+#. The value of the ``robot_id`` field shall match that of the numeric
+   identifier of the corresponding motion group on the controller. This field
+   uses zero-based counting.
+   In cases where motion groups are not identified by numeric ids on the
+   controller, drivers shall implement an appropriate mapping (ie:
+   alphabetical sorting of group names, etc).
+#. Refer to `Special Sequence Numbers`_ for valid values for the ``sequence``
+   field.
+#. Driver authors must abort any motion executing on the controller on receipt
+   of a message with ``sequence`` set to ``STOP_TRAJECTORY``. Note that such
+   messages must also be acknowledged with a reply message.
+#. Servers must abort any motion executing on the controller on receipt of an
+   out-of-order trajectory point (ie: ``(seq(msg_n) - seq(msg_n-1)) != 1``).
+#. Refer to `Valid fields`_ for defined bit positions for the ``valid_fields``
+   field.
+#. Drivers shall set all undefined bit positions in ``valid_fields`` to zero
+   (``0``).
+#. Drivers shall set all elements of invalid fields (as encoded by
+   ``valid_fields``) to zero (``0``).
+#. Elements of ``positions``, ``velocities`` and ``accelerations`` that are
+   not used must be initialised to zero (``0``) by the sender.
+#. The size of the ``positions``, ``velocities`` and ``accelerations`` arrays
+   is ``10``, even if the server implementation does not need that many
+   elements (for instance because it only has six joints).
 
 
 JOINT_FEEDBACK
@@ -534,9 +586,13 @@ Supports multiple motion groups.
 
 Message type: *asynchronous publication*
 
-Assigned identifier (see [#REP-I0004]_): 15
+Assigned message identifier: 15
 
-Msg::
+Status: active, in use
+
+Supported by generic nodes: no
+
+Message::
 
   Preamble
   Header
@@ -549,7 +605,108 @@ Msg::
 
 Notes
 
-#. See `JOINT_TRAJ_PT_FULL`_ for defined bit positions in ``valid_fields``.
+#. Refer to `Special Sequence Numbers`_ for valid values for the ``sequence``
+   field.
+#. The value of the ``robot_id`` field shall match that of the numeric
+   identifier of the corresponding motion group on the controller. This field
+   uses zero-based counting.
+   In cases where motion groups are not identified by numeric ids on the
+   controller, drivers shall implement an appropriate mapping (ie:
+   alphabetical sorting of group names, etc).
+#. Refer to `Valid fields`_ for defined bit positions for the ``valid_fields``
+   field.
+#. Drivers shall set all undefined bit positions in ``valid_fields`` to zero
+   (``0``).
+#. Drivers shall set all elements of invalid fields (as encoded by
+   ``valid_fields``) to zero (``0``).
+#. Elements of ``positions``, ``velocities`` and ``accelerations`` that are
+   not used must be initialised to zero (``0``) by the sender.
+#. The size of the ``positions``, ``velocities`` and ``accelerations`` arrays
+   is ``10``, even if the server implementation does not need that many
+   elements (for instance because it only has six joints).
+
+
+Defined Constants
+=================
+
+This section documents all shared constants as defined in the Simple Message
+protocol. Constants defined in this section are recognised by the generic
+nodes in the ``industrial_robot_client`` package and shall be used by
+compliant drivers.
+
+
+Communication Types
+-------------------
+
+::
+
+  Val  Name             Description
+
+    0  INVALID          Reserved value. Do not use.
+    1  TOPIC            Message needs no acknowledgement
+    2  SERVICE_REQUEST  Sender requires acknowledgement
+    3  SERVICE_REPLY    Message is a reply to a request
+
+All other values are reserved for future use.
+
+
+Reply Codes
+-----------
+
+::
+
+  Val  Name     Description
+
+    0  INVALID  Also encodes UNUSED
+    1  SUCCESS  Receiver processed the message succesfully
+    2  FAILURE  Receiver encountered a failure processing the message
+
+All other values are reserved for future use.
+
+
+Special Sequence Numbers
+------------------------
+
+::
+
+  Val  Name                        Description
+
+    N                              Index into current trajectory
+   -1  START_TRAJECTORY_DOWNLOAD   Downloading drivers only: signals start
+   -2  START_TRAJECOTRY_STREAMING  TODO (typo is on purpose)
+   -3  END_TRAJECTORY              Downloading drivers only: signals end
+   -4  STOP_TRAJECTORY             Driver must abort any currently executing motion
+
+All other *negative* values are reserved for future use.
+
+
+Tri-states
+----------
+
+::
+
+  Val  Name     Description
+
+   -1  UNKNOWN  -
+    0  ON       Also encodes TRUE, ENABLED or HIGH
+    1  OFF      Also encodes FALSE, DISABLED or LOW
+
+All other values are reserved for future use.
+
+
+Valid fields
+------------
+
+Bit positions are counted starting from LSB::
+
+  Pos  Name          Description
+
+    0  TIME          The 'time' field contains valid data
+    1  POSITION      The 'positions' field contains valid data
+    2  VELOCITY      The 'velocities' field contains valid data
+    3  ACCELERATION  The 'accelerations' field contains valid data
+
+All other positions are reserved for future use.
 
 
 Application Procedure
@@ -578,7 +735,7 @@ Revision History
 
 ::
 
-  2016-Jan-5   Initial revision
+  2016-Apr-15   Initial revision
 
 
 Copyright
