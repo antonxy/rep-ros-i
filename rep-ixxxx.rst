@@ -10,6 +10,19 @@
   Post-History: 
 
 
+Abstract
+========
+
+This REP documents the Simple Message message structures that are part
+of the *standard set* as defined in REP-I0004, and supported by the
+generic clients in the ``industrial_robot_client`` package. Both
+syntax and semantics of message structures and fields are described.
+
+Driver authors may treat this document as the normative reference for
+message type structures in the standard set within the ROS-Industrial
+Simple Message protocol.
+
+
 Outline
 =======
 
@@ -59,19 +72,6 @@ Outline
 
 #. `Revision History`_
 #. Copyright_
-
-
-Abstract
-========
-
-This REP documents the Simple Message message structures that are part
-of the *standard set* as defined in REP-I0004, and supported by the
-generic clients in the ``industrial_robot_client`` package. Both
-syntax and semantics of message structures and fields are described.
-
-Driver authors may treat this document as the normative reference for
-message type structures in the standard set within the ROS-Industrial
-Simple Message protocol.
 
 
 Motivation
