@@ -26,7 +26,7 @@ Outline
 
 #. `Packet Layout`_
 
-   #. Preamble_
+   #. Prefix_
    #. Header_
    #. Body_
 
@@ -212,10 +212,10 @@ The following sections describe the different sub structures that make up
 a valid Simple Message packet.
 
 
-Preamble
---------
+Prefix
+------
 
-All packets must start with the *preamble*, which must contain only a single
+All packets must start with the *prefix*, which must contain only a single
 field: ``length``. Message structure length is defined as the sum in bytes
 of the sizes of the individual fields in the *header* and the *body*,
 excluding the ``length`` field itself (ie: only actual message bytes are
@@ -227,8 +227,8 @@ Layout::
 
 Notes
 
-#. Client and server implementations must add the preamble to all outgoing
-   messages.
+#. Client and server implementations shall prefix all outgoing messages with
+   the value of ``length``.
 #. Refer to section `Shared Types`_ for information on the size of supported
    field types.
 #. The size of fields that are arrays or lists shall be defined as the size
@@ -272,9 +272,9 @@ Body
 ----
 
 The *body* is that part of the packet which consists of all fields that are
-not part of either the preamble or the message header. Most message structures
+not part of either the prefix or the message header. Most message structures
 described in the `Message Definitions`_ section have a body part, but this is
-not required. Messages may consist of only a preamble and a header, for
+not required. Messages may consist of only a prefix and a header, for
 example in the case of pure acknowledgements that carry no data.
 
 In cases where fixed-size messages are required, an array of ``shared_int``
@@ -309,13 +309,13 @@ Supported by generic nodes: yes
 
 Request::
 
-  Preamble
+  Prefix
   Header
   data             : shared_int[10]
 
 Reply::
 
-  Preamble
+  Prefix
   Header
   data             : shared_int[10]
 
@@ -341,12 +341,12 @@ Supported by generic nodes: no
 
 Request::
 
-  Preamble
+  Prefix
   Header
 
 Reply::
 
-  Preamble
+  Prefix
   Header
   major            : shared_int
   minor            : shared_int
@@ -383,7 +383,7 @@ Supported by generic nodes: yes
 
 Message::
 
-  Preamble
+  Prefix
   Header
   sequence         : shared_int
   joint_data       : shared_real[10]
@@ -431,7 +431,7 @@ Supported by generic nodes: yes
 
 Request::
 
-  Preamble
+  Prefix
   Header
   sequence         : shared_int
   joint_data       : shared_real[10]
@@ -440,7 +440,7 @@ Request::
 
 Reply::
 
-  Preamble
+  Prefix
   Header
   dummy_data       : shared_real[10]
 
@@ -530,7 +530,7 @@ Supported by generic nodes: yes
 
 Message::
 
-  Preamble
+  Prefix
   Header
   drives_powered   : shared_int
   e_stopped        : shared_int
@@ -583,7 +583,7 @@ Supported by generic nodes: no (motoman_driver only)
 
 Request::
 
-  Preamble
+  Prefix
   Header
   robot_id         : shared_int
   sequence         : shared_int
@@ -595,7 +595,7 @@ Request::
 
 Reply::
 
-  Preamble
+  Prefix
   Header
   dummy_data       : shared_real[10]
 
@@ -652,7 +652,7 @@ Supported by generic nodes: no (motoman_driver only)
 
 Message::
 
-  Preamble
+  Prefix
   Header
   robot_id         : shared_int
   valid_fields     : shared_int
@@ -808,7 +808,7 @@ broadcast joint state for a six-axis, serial industrial robot.
 
   Hex       Field              Description
 
-            Preamble
+            Prefix
   00000038    length           56 bytes
 
             Header
@@ -837,7 +837,7 @@ Example: JOINT_TRAJ_PT
 
   Hex       Field              Description
 
-            Preamble
+            Prefix
   00000040    length           64 bytes
 
             Header
@@ -871,7 +871,7 @@ serial industrial robot.
 
   Hex       Field              Description
 
-            Preamble
+            Prefix
   00000028    length           40 bytes
 
             Header
