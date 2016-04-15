@@ -266,7 +266,7 @@ Notes
 #. Incoming ``SERVICE_REQUEST`` messages requesting use of a service that the
    receiver does not support shall result in a ``SERVICE_REPLY`` being sent
    by the receiver with the ``reply_code`` set to ``FAILURE``. No further
-   action shall be taken.
+   action shall be taken. TODO: should a 'generic reply' message be defined?
 #. Implementations shall ignore incoming ``SERVICE_REPLY`` messages for
    which no outstanding ``SERVICE_REQUEST`` exists.
 #. Implementations shall warn the user of any incoming messages with the
