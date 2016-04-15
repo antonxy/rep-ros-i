@@ -260,6 +260,8 @@ minimal delay.
 
 Message type: *synchronous service*
 
+Assigned identifier (see [#REP-I0004]_): 1
+
 Request::
 
   Preamble
@@ -285,6 +287,8 @@ Allows clients to determine the specific version of a server implementation
 running on the remote system.
 
 Message type: *synchronous service*
+
+Assigned identifier (see [#REP-I0004]_): 2
 
 Request::
 
@@ -319,6 +323,8 @@ Only used for relaying server state, NOT for enqueueing trajectory points.
 One of the two message used for broadcasting joint states
 
 Message type: *asynchronous publication*
+
+Assigned identifier (see [#REP-I0004]_): 10
 
 Msg::
 
@@ -359,6 +365,8 @@ Description.
 Also: ``ROBOT_STATUS``. Not for joint states.
 
 Message type: *asynchronous publication*
+
+Assigned identifier (see [#REP-I0004]_): 13
 
 Msg::
 
@@ -409,6 +417,8 @@ the server.
 
 Message type: *synchronous service*
 
+Assigned identifier (see [#REP-I0004]_): 11
+
 Msg::
 
   Preamble
@@ -449,6 +459,8 @@ Deprecated.
 
 Message type: *synchronous service*
 
+Assigned identifier (see [#REP-I0004]_): 12
+
 Msg::
 
   Header
@@ -473,6 +485,8 @@ type. But without the ``names`` field (we rely on indices).
 TODO: extend.
 
 Message type: *synchronous service*
+
+Assigned identifier (see [#REP-I0004]_): 14
 
 Msg::
 
@@ -518,6 +532,8 @@ Only used for broadcasting server state.
 Supports multiple motion groups.
 
 Message type: *asynchronous publication*
+
+Assigned identifier (see [#REP-I0004]_): 15
 
 Msg::
 
