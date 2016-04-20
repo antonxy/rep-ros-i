@@ -309,9 +309,9 @@ Message type: *synchronous service*
 
 Assigned message identifier: 1
 
-Status: active, in use
+Status: *active, in use*
 
-Supported by generic nodes: yes
+Supported by generic nodes: *yes*
 
 Request::
 
@@ -341,9 +341,9 @@ Message type: *synchronous service*
 
 Assigned message identifier: 2
 
-Status: active, in use
+Status: *active, in use*
 
-Supported by generic nodes: no
+Supported by generic nodes: *no*
 
 Request::
 
@@ -383,9 +383,9 @@ Message type: *asynchronous publication*
 
 Assigned message identifier: 10
 
-Status: active, in use
+Status: *active, in use*
 
-Supported by generic nodes: yes
+Supported by generic nodes: *yes*
 
 Message::
 
@@ -431,9 +431,9 @@ Message type: *synchronous service*
 
 Assigned message identifier: 11
 
-Status: active, in use
+Status: *active, in use*
 
-Supported by generic nodes: yes
+Supported by generic nodes: *yes*
 
 Request::
 
@@ -501,9 +501,9 @@ Message type: *synchronous service*
 
 Assigned message identifier: 12
 
-Status: deprecated
+Status: *deprecated*
 
-Supported by generic nodes: no
+Supported by generic nodes: *no*
 
 Message::
 
@@ -530,9 +530,9 @@ Message type: *asynchronous publication*
 
 Assigned message identifier: 13
 
-Status: active, in use
+Status: *active, in use*
 
-Supported by generic nodes: yes
+Supported by generic nodes: *yes*
 
 Message::
 
@@ -583,9 +583,9 @@ Message type: *synchronous service*
 
 Assigned message identifier: 14
 
-Status: active, in use
+Status: *active, in use*
 
-Supported by generic nodes: no (motoman_driver only)
+Supported by generic nodes: *no* (motoman_driver only)
 
 Request::
 
@@ -652,9 +652,9 @@ Message type: *asynchronous publication*
 
 Assigned message identifier: 15
 
-Status: active, in use
+Status: *active, in use*
 
-Supported by generic nodes: no (motoman_driver only)
+Supported by generic nodes: *no* (motoman_driver only)
 
 Message::
 
