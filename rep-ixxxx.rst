@@ -390,8 +390,20 @@ The following structure describes the *ROS-Industrial packet header*
 Whenever subsequent message definitions refer to this header, its
 contents (named fields and their types) should be considered to be
 part of the definition, and the value of the ``length`` field should
-reflect the total number of bytes in the defined message.
+reflect the total number of bytes in the defined message including
+the header but excluding the length itself.
 
+Comm type values:
+
+- 1 for asynchronous publication
+- 2 for synchronous service request
+- 3 for synchronous service reply
+
+Reply code values:
+
+- 0 invalid (reply code is only valid for synchronous service reply messages)
+- 1 for success
+- 2 for failure
 
 Basic Profile
 -------------
@@ -430,20 +442,20 @@ Message type: *synchronous service*
 
 Request::
 
-  ROS-I Header
+  ROS-I Header (msg_type = 65200, comm_type = 2, reply_code = 0)
   message_id       : uint32
 
 Reply::
 
-  ROS-I Header
+  ROS-I Header (msg_type = 65200, comm_type = 3, reply_code = 1/2)
   message_id       : uint32
   ctrlr_feat_mask  : uint32
   num_items        : uint32
   items[]
   {
-    type           : uint16
-    start          : uint16
-    len            : uint16
+    type           : uint32
+    start          : uint32
+    len            : uint32
     feat_mask      : uint32
   }
 
@@ -510,26 +522,26 @@ Message type: *synchronous service*
 
 Request::
 
-  ROS-I Header
+  ROS-I Header (msg_type = 65201, comm_type = 2, reply_code = 0)
   message_id : uint32
   num_items  : uint32
   items[]
   {
-    type     : uint16
-    index    : uint16
+    type     : uint32
+    index    : uint32
   }
 
 Reply::
 
-  ROS-I Header
+  ROS-I Header (msg_type = 65201, comm_type = 3, reply_code = 1/2)
   message_id : uint32
   timestamp  : uint32
   num_items  : uint32
   items[]
   {
-    type     : uint16
-    index    : uint16
-    result   : uint16
+    type     : uint32
+    index    : uint32
+    result   : uint32
     value    : uint32
   }
 
@@ -590,27 +602,27 @@ Message type: *synchronous service*
 
 Request::
 
-  ROS-I Header
+  ROS-I Header (msg_type = 65202, comm_type = 2, reply_code = 0)
   message_id : uint32
   num_items  : uint32
   items[]
   {
-    type     : uint16
-    index    : uint16
+    type     : uint32
+    index    : uint32
     value    : uint32
   }
 
 Reply::
 
-  ROS-I Header
+  ROS-I Header (msg_type = 65202, comm_type = 3, reply_code = 1/2)
   message_id : uint32
   timestamp  : uint32
   num_items  : uint32
   items[]
   {
-    type     : uint16
-    index    : uint16
-    result   : uint16
+    type     : uint32
+    index    : uint32
+    result   : uint32
   }
 
 Errors
@@ -649,25 +661,25 @@ Message type: *synchronous service*
 
 Request::
 
-  ROS-I Header
+  ROS-I Header (msg_type = 65203, comm_type = 2, reply_code = 0)
   message_id : uint32
   num_items  : uint32
   items[]
   {
-    type     : uint16
-    index    : uint16
+    type     : uint32
+    index    : uint32
   }
 
 Reply::
 
-  ROS-I Header
+  ROS-I Header (msg_type = 65203, comm_type = 3, reply_code = 1/2)
   message_id : uint32
   num_items  : uint32
   items[]
   {
-    type     : uint16
-    index    : uint16
-    result   : uint16
+    type     : uint32
+    index    : uint32
+    result   : uint32
   }
 
 Errors
@@ -717,26 +729,26 @@ Message type: *synchronous service*
 
 Request::
 
-  ROS-I Header
+  ROS-I Header (msg_type = 65204, comm_type = 2, reply_code = 0)
   message_id : uint32
   num_items  : uint32
   items[]
   {
-    type     : uint16
-    start    : uint16
-    len      : uint16
+    type     : uint32
+    start    : uint32
+    len      : uint32
   }
 
 Reply::
 
-  ROS-I Header
+  ROS-I Header (msg_type = 65204, comm_type = 3, reply_code = 1/2)
   message_id : uint32
   num_items  : uint32
   items[]
   {
-    type     : uint16
-    start    : uint16
-    result   : uint16
+    type     : uint32
+    start    : uint32
+    result   : uint32
   }
 
 Errors
@@ -777,25 +789,25 @@ Message type: *synchronous service*
 
 Request::
 
-  ROS-I Header
+  ROS-I Header (msg_type = 65205, comm_type = 2, reply_code = 0)
   message_id : uint32
   num_items  : uint32
   items[]
   {
-    type     : uint16
-    start    : uint16
+    type     : uint32
+    start    : uint32
   }
 
 Reply::
 
-  ROS-I Header
+  ROS-I Header (msg_type = 65205, comm_type = 3, reply_code = 1/2)
   message_id : uint32
   num_items  : uint32
   items[]
   {
-    type     : uint16
-    start    : uint16
-    result   : uint16
+    type     : uint32
+    start    : uint32
+    result   : uint32
   }
 
 Errors
@@ -821,14 +833,14 @@ Message type: *asynchronous publication*
 
 Msg::
 
-  ROS-I Header
+  ROS-I Header (msg_type = 65206, comm_type = 1, reply_code = 0)
   timestamp : uint32
   num_items : uint32
   items[]
   {
-    type    : uint16
-    start   : uint16
-    len     : uint16
+    type    : uint32
+    start   : uint32
+    len     : uint32
     values[]
     {
       value : uint32
@@ -863,12 +875,12 @@ Message type: *synchronous service*
 
 Request::
 
-  ROS-I Header
+  ROS-I Header (msg_type = 65207, comm_type = 2, reply_code = 0)
   message_id : uint32
-  num_items  : uint16
+  num_items  : uint32
   items[]
   {
-    item     : uint16
+    item     : uint32
   }
 
 Valid IDs for the ``item`` field are::
@@ -881,14 +893,14 @@ All other IDs are reserved for future use.
 
 Reply::
 
-  ROS-I Header
+  ROS-I Header (msg_type = 65207, comm_type = 3, reply_code = 1/2)
   message_id : uint32
   num_items  : uint32
   items[]
   {
-    item     : uint16
-    type     : uint16
-    result   : uint16
+    item     : uint32
+    type     : uint32
+    result   : uint32
     value    : uint32
   }
 
@@ -925,25 +937,25 @@ Message type: *synchronous service*
 
 Request::
 
-  ROS-I Header
+  ROS-I Header (msg_type = 65208, comm_type = 2, reply_code = 0)
   message_id : uint32
   num_items  : uint32
   items[]
   {
-    item     : uint16
-    type     : uint16
+    item     : uint32
+    type     : uint32
     value    : uint32
   }
 
 Reply::
 
-  ROS-I Header
+  ROS-I Header (msg_type = 65208, comm_type = 3, reply_code = 1/2)
   message_id : uint32
   num_items  : uint32
   items[]
   {
-    item     : uint16
-    result   : uint16
+    item     : uint32
+    result   : uint32
   }
 
 Errors
@@ -991,7 +1003,11 @@ This section defines status codes and associated error messages::
           3001  Invalid index: no such item
           3002  Invalid value: out of bounds for item
 
-    3003-64000  Reserved for future use
+     3003-4000  Reserved for future use
+
+          4001  Write disabled (e.g. by e-stop)
+
+    4002-64000 Reserved for future use
 
    64001-65000  Manufacturer specific
 
@@ -1045,6 +1061,113 @@ by users and allows for ID assignment within a limited scope (ie:
 per project). An example would be IO messages for custom end effector
 hardware that do not fall into any of the already defined categories.
 
+Examples
+========
+
+
+IO_WRITE
+--------
+
+Request::
+
+  length : int32 = 56
+  ROS-I Header:
+    msg_type : int32 = 65202
+    comm_type : int32 = 2
+    reply_code : int32 = 0
+  Content:
+    message_id : uint32 = 1234
+    num_items : unit32 = 3
+    items[]
+    {
+      type : uint32 = 2 (Digital Out)
+      index : uint32 = 5
+      value : uint32 = 1
+
+      type : uint32 = 4 (Analogue Out)
+      index : uint32 = 2
+      value : uint32 = 1024
+
+      type : uint32 = 4 (Analogue Out)
+      index : uint32 = 500 (Invalid index)
+      value : uint32 = 1024
+    }
+
+Reply::
+
+  length : int32 = 60
+  ROS-I Header:
+    msg_type : int32 = 65202
+    comm_type : int32 = 3
+    reply_code : int32 = 1
+  Content:
+    message_id : uint32 = 1234
+    timestamp : uint32 = 14526969289746 (Milliseconds since 1.1.1970)
+    num_items : unit32 = 3
+    items[]
+    {
+      type : uint32 = 2 (Digital Out)
+      index : uint32 = 5
+      result : uint32 = 1
+
+      type : uint32 = 4 (Analogue Out)
+      index : uint32 = 2
+      result : uint32 = 1
+
+      type : uint32 = 4 (Analogue Out)
+      index : uint32 = 500
+      result : uint32 = 2001 (Error: Index out of bounds)
+    }
+
+
+IO_STREAM_PUB
+-------------
+
+Msg::
+
+  length : int32 = 124
+  ROS-I Header:
+    msg_type : int32 = 65206
+    comm_type : int32 = 1
+    reply_code : int32 = 0
+  Content:
+    timestamp : uint32 = 14526969289746 (Milliseconds since 1.1.1970)
+    num_items : unit32 = 2
+    items[]
+    {
+      type : uint32 = 1 (Digital In)
+      start : uint32 = 0
+      len : uint32 = 10
+      values[]
+      {
+        value : uint32 = 1
+        value : uint32 = 0
+        value : uint32 = 1
+        value : uint32 = 1
+        value : uint32 = 0
+        value : uint32 = 1
+        value : uint32 = 0
+        value : uint32 = 1
+        value : uint32 = 0
+        value : uint32 = 0
+      }
+      type : uint32 = 3 (Analogue In)
+      start : uint32 = 0
+      len : uint32 = 10
+      values[]
+      {
+        value : uint32 = 753
+        value : uint32 = 0
+        value : uint32 = 0
+        value : uint32 = 1024
+        value : uint32 = 0
+        value : uint32 = 643
+        value : uint32 = 215
+        value : uint32 = 975
+        value : uint32 = 23
+        value : uint32 = 853
+      }
+    }
 
 ROS API
 =======
